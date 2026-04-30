@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400&family=Lato:wght@300;400&display=swap');
+
+:root{
+    --background: rgb(134, 173, 134);
+    --text: black;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--background);
+    border-radius: 16px;
+    margin: 1rem;
+}
+
+a{
+    margin: 1rem;
+    text-decoration: none;
+    color: var(--text);
+}
+
+ul{
+    display: flex;
+}
+
+li{
+    list-style-type: none;
+}
+
+h1{
+    font-family: 'Fraunces', serif;
+    text-align: center;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+}
+
+footer{
+    position: relative;
+    bottom: 0;
+}
+
+.section1{
+    background-color: rgb(255, 253, 245);
+    height: 100vh;
+    width: 100%;
+}
+
+.section2{
+    background-color: aliceblue;
+    height: 100vh;
+    width: 100%;
+}
