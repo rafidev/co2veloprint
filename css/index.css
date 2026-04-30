@@ -6,6 +6,7 @@
 }
 
 body{
+    background-color: rgb(255, 253, 245);
     margin: 0;
     padding: 0;
 }
@@ -48,13 +49,21 @@ footer{
 }
 
 .section1{
-    background-color: rgb(255, 253, 245);
     height: 100vh;
     width: 100%;
 }
 
 .section2{
-    background-color: aliceblue;
     height: 100vh;
     width: 100%;
+}
+
+.button{
+    background-color: rgb(134, 173, 134);
+    padding: 10px 20px;
+    border-radius: 16px;
+}
+
+.button:hover{
+    background-color: rgb(166, 214, 166);
 }
