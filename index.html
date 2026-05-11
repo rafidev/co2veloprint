@@ -1,51 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>co2veloprint</title>
+    <title>co2veloprint | Bewusst Bewegen</title>
     <link rel="stylesheet" href="css/index.css">
-
 </head>
 <body>
     <header>
-        <nav>
-            <nav class="nav-right">
-                <a href="index.html">Logo placeholder</a>
-                <a href="about.html">about</a>
-            </nav>
-            <nav class="nav-center">
-
-            </nav>
-            <nav class="nav-left">
-                <a href="dashboard.html">View My Diary</a>
-            </nav>
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <a href="index.html" class="logo"><strong>co2</strong>veloprint</a>
+            </div>
+            <div class="nav-links">
+                <a href="about.html">Über das Projekt</a>
+                <a href="dashboard.html" class="button-nav">Zum Tagebuch</a>
+            </div>
         </nav>
     </header>
-    <main>
-        <section class="section1">
-            <div>
-                <h1>
-                    co2veloprint
-                </h1>
-                <p>
-                    Help us save co2, track how much you save by taking public transport
-                </p>
-                <a class="button">Start Tracking.</a>
-            </div>
-            <div>
 
+    <main>
+        <section class="section1 hero">
+            <div class="hero-content">
+                <h1>Deine Wege.<br><span>Deine Bilanz.</span></h1>
+                <p>
+                    Wie viel CO2 sparst du wirklich, wenn du den Bus nimmst? 
+                    <strong>co2veloprint</strong> nutzt Echtzeit-Routing und offizielle Emissionsdaten, 
+                    um deinen ökologischen Fußabdruck im Verkehr sichtbar zu machen.
+                </p>
+                <div class="hero-btns">
+                    <a href="dashboard.html" class="button-primary">Jetzt Tagebuch starten</a>
+                    <a href="#logic" class="button-secondary">Wie wir rechnen</a>
+                </div>
             </div>
         </section>
-        <section class="section2">
-            <p>
-                The websites work with these apis: 
-            </p>
+
+        <section id="logic" class="section2 logic-grid">
+            <div class="logic-header">
+                <h2>Wissenschaftlich fundiert.</h2>
+                <p>Unsere Berechnung basiert auf der Differenz zwischen Individualverkehr und deiner gewählten Alternative.</p>
+            </div>
+
+            <div class="feature-container">
+                <div class="feature-card">
+                    <h3>Präzises Routing</h3>
+                    <p>Mithilfe von <strong>OSRM</strong> und <strong>OpenStreetMap</strong> berechnen wir die exakte Distanz deiner Strecke.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Aktuelle Daten</h3>
+                    <p>Wir nutzen die <strong>2024 GHG Conversion Factors</strong> für präzise Emissionswerte pro Kilometer.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Netto-Ersparnis</h3>
+                    <p>Die Formel: <span>(Distanz × Auto-Faktor) - (Distanz × Transport-Faktor)</span> zeigt dir deinen Erfolg.</p>
+                </div>
+            </div>
         </section>
-        
     </main>
+
     <footer>
-        <a href="impressum.html">impressum</a>
+        <div class="footer-bottom">
+            <p>&copy; rafael dauth 2026</p>
+            <a href="impressum.html">Impressum</a>
+        </div>
     </footer>
 </body>
 </html>
