@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=Lato:wght@300;400;700&display=swap');
+
+:root {
+    --primary: rgb(134, 173, 134);
+    --primary-dark: #6e8f6e;
+    --bg-cream: rgb(255, 253, 245);
+    --text-black: #1a1a1a;
+}
+
+.impressum-section {
+    padding: 8rem 10%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: var(--bg-cream);
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+}
+
+
+.impressum-container {
+    max-width: 800px;
+    width: 100%;
+}
+
+.impressum-container h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    color: var(--text-black);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+
+.legal-subtitle {
+    font-size: 0.95rem;
+    color: var(--primary-dark); 
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4rem;
+}
+
+.impressum-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.impressum-block {
+    border-bottom: 1px solid rgba(110, 143, 110, 0.2); 
+    padding-bottom: 2rem;
+}
+
+.impressum-block:last-child {
+    border-bottom: none; 
+}
+
+.impressum-content h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.25rem;
+    color: var(--primary-dark);
+    margin-bottom: 0.75rem;
+}
+
+.impressum-content p {
+    font-family: 'Lato', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text-black);
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .impressum-section {
+        padding: 4rem 5%;
+    }
+    
+    .impressum-container h1 {
+        font-size: 2.5rem;
+    }
+}
