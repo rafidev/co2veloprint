@@ -141,3 +141,38 @@ footer {
 
 .footer-bottom p { font-size: 0.9rem; color: #888; margin-bottom: 10px; }
 .footer-bottom a { color: var(--primary); font-size: 0.9rem; }
+
+/* autocomplition */
+.field-wrapper {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000; 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: none; 
+  border-radius: 0 0 4px 4px;
+}
+
+.dropdown-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
