@@ -6,21 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupAutocomplete(inputId, dropdownId) {
   const input = document.getElementById(inputId);
   const dropdown = document.getElementById(dropdownId);
-
   let debounceTimer;
+
   input.addEventListener('input', () => {
+    if (inputId === 'from-input') { window._selectedFrom = null; window._selectedFromName = null; }
+    else                          { window._selectedTo   = null; window._selectedToName   = null; }
+
     clearTimeout(debounceTimer);
     const query = input.value.trim();
-
     if (query.length < 3) {
       dropdown.innerHTML = '';
       dropdown.style.display = 'none';
       return;
     }
-
-    debounceTimer = setTimeout(() => {
-      fetchPlaces(query, dropdown, input);
-    }, 400); 
+    debounceTimer = setTimeout(() => fetchPlaces(query, dropdown, input), 400);
   });
 
   document.addEventListener('click', (e) => {
@@ -33,44 +32,40 @@ function setupAutocomplete(inputId, dropdownId) {
 
 async function fetchPlaces(query, dropdown, input) {
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`;
-
   try {
-    const response = await fetch(url, {
-      headers: {
-        'Accept-Language': 'en'
-      }
-    });
-    const data = await response.json();
-
+    const res  = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await res.json();
     renderDropdown(data, dropdown, input);
-  } catch (error) {
-    console.error('Error fetching places:', error);
+  } catch (err) {
+    console.error('Autocomplete error:', err);
   }
 }
 
 function renderDropdown(places, dropdown, input) {
   dropdown.innerHTML = '';
-
-  if (places.length === 0) {
-    dropdown.style.display = 'none';
-    return;
-  }
+  if (!places.length) { dropdown.style.display = 'none'; return; }
 
   places.forEach(place => {
     const item = document.createElement('div');
-    item.className = 'dropdown-item';
+    item.className   = 'dropdown-item';
     item.textContent = place.display_name;
 
-    item.dataset.lat = place.lat;
-    item.dataset.lon = place.lon;
-
     item.addEventListener('click', () => {
-      input.value = place.display_name;
-      
+      const shortName = place.display_name.split(',')[0].trim();
+
+      input.value       = place.display_name;
       input.dataset.lat = place.lat;
       input.dataset.lon = place.lon;
 
-      dropdown.innerHTML = '';
+      if (input.id === 'from-input') {
+        window._selectedFrom     = [parseFloat(place.lat), parseFloat(place.lon)];
+        window._selectedFromName = shortName;
+      } else {
+        window._selectedTo     = [parseFloat(place.lat), parseFloat(place.lon)];
+        window._selectedToName = shortName;
+      }
+
+      dropdown.innerHTML    = '';
       dropdown.style.display = 'none';
     });
 
