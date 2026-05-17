@@ -118,7 +118,6 @@ h1 span { color: var(--primary); }
     transition: 0.3s;
 }
 
-.feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
 
 .feature-card .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
 
