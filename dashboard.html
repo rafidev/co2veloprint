@@ -1,18 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>co2veloprint</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="./css/dashboard.css">
 </head>
-<body>
-    <main>
-        <nav>
+<body class="dashboard-container">
+
+  <nav class="navigation-bar">
+    <a href="index.html" class="nav-logo">co2<strong>veloprint</strong></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Landing Page</a>
+      <a href="legal-notice.html" class="nav-link">Legal Notice</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+
+    <aside class="sidebar-panel">
+      <div class="sidebar-content">
+
+        <h1 class="sidebar-title">Emissions Calculator</h1>
+        <p class="sidebar-subtitle">Add one or more routes and compare the CO₂ emissions.</p>
+
+        <div class="route-builder">
+          <div class="field-wrapper">
+            <label class="field-label" for="from-input">From</label>
+            <input class="field-input" id="from-input" type="text" placeholder="City or address" autocomplete="off">
+            <div class="dropdown-menu" id="from-dd"></div>
+          </div>
           
-        </nav>
+          <div class="field-wrapper">
+            <label class="field-label" for="to-input">To</label>
+            <input class="field-input" id="to-input" type="text" placeholder="City or address" autocomplete="off">
+            <div class="dropdown-menu" id="to-dd"></div>
+          </div>
+          
+          <div id="form-error" class="error-message"></div>
+          <button class="button button-green button-full-width" id="add-route-btn">Add Route</button>
+        </div>
 
+        <div class="routes-container" id="routes-section">
+          <div class="section-header-row">
+            <span class="section-header-title">Routes</span>
+            <button class="text-link-button" id="clear-all-btn">Delete All</button>
+          </div>
+          <div id="routes-list"></div>
+        </div>
 
-    </main>
+        <div class="transport-container" id="transport-section">
+          <div class="section-header-row">
+            <span class="section-header-title">Select Mode of Transport</span>
+          </div>
+          <p class="sidebar-hint">Select a mode of transport to view emissions across all routes.</p>
+          <div class="transport-selection-grid" id="transport-grid"></div>
+        </div>
 
+        <p class="data-attribution">DEFRA 2024 · Ember 2024 (AT: 130 gCO₂/kWh) · OSRM · Nominatim</p>
+
+      </div>
+    </aside>
+
+    <div class="main-view-panel">
+      <div id="map"></div>
+      
+      <div class="results-panel-overlay" id="results-overlay">
+        <div id="overlay-inner"></div>
+      </div>
+      
+      <div class="map-placeholder-view" id="map-empty">
+        <p>Add a route to see it here.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./js/route.js"></script>
 </body>
 </html>

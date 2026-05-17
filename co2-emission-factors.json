@@ -1,0 +1,202 @@
+{
+  "_meta": {
+    "title": "CO2e Emission Factors for Passenger Transport",
+    "unit": "kg CO2e per passenger-km",
+    "primary_source": "UK Government Greenhouse Gas Conversion Factors 2024 (DEFRA / DESNZ)",
+    "primary_source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+    "primary_source_published": "2024-07-08",
+    "primary_source_updated": "2024-10-30",
+    "grid_source": "Ember European Electricity Review 2024 (2023 data)",
+    "grid_source_url": "https://ember-energy.org/latest-insights/european-electricity-review-2024/",
+    "notes": [
+      "All values are kg CO2e (carbon dioxide equivalent) per passenger-kilometre.",
+      "CO2e includes CO2, CH4, and N2O weighted by global warming potential (GWP100).",
+      "DEFRA values are UK-specific. They are widely used internationally as a reference baseline.",
+      "Electric modes (train, metro, tram, e-bike) scale with national grid CO2 intensity.",
+      "For electric modes: factor = grid_gCO2e_per_kWh * energy_kWh_per_km / 1000",
+      "The factor_kg_per_km for electric modes uses the EU average grid (242 gCO2/kWh, EEA 2023)."
+    ]
+  },
+
+  "transport_modes": {
+
+    "car_petrol_average": {
+      "label": "Petrol car (average size)",
+      "factor_kg_per_km": 0.1645,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "source_sheet": "Business travel – land (condensed set)",
+      "notes": "Average-sized petrol car, real-world UK data. Widely used as the car baseline."
+    },
+
+    "car_diesel_average": {
+      "label": "Diesel car (average size)",
+      "factor_kg_per_km": 0.1654,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "source_sheet": "Business travel – land (condensed set)"
+    },
+
+    "car_electric_average": {
+      "label": "Electric car (average size, UK grid)",
+      "factor_kg_per_km": 0.0436,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "UK grid intensity ~238 gCO2/kWh. Adjust for other countries using grid_intensity_by_country."
+    },
+
+    "bus_local_average": {
+      "label": "Local city bus (average occupancy)",
+      "factor_kg_per_km": 0.0272,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "source_sheet": "Business travel – land (condensed set)",
+      "notes": "2024 figure. Increased 6.18% from 2023 due to post-COVID ridership recovery reducing per-passenger efficiency."
+    },
+
+    "bus_local_legacy": {
+      "label": "Local city bus (older DEFRA figure, widely cited)",
+      "factor_kg_per_km": 0.0890,
+      "source": "DEFRA (pre-2023)",
+      "source_url": "https://www.carbonindependent.org/20.html",
+      "notes": "Older value still widely referenced. Higher because it used lower average occupancy assumptions."
+    },
+
+    "coach_average": {
+      "label": "Coach / long-distance bus",
+      "factor_kg_per_km": 0.0270,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024"
+    },
+
+    "train_national_rail_uk": {
+      "label": "Train — National Rail (UK)",
+      "factor_kg_per_km": 0.03546,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "UK-specific. Reflects UK grid mix (~238 gCO2/kWh). For other countries use the electric_mode_formula."
+    },
+
+    "train_international": {
+      "label": "Train — international (e.g. Eurostar)",
+      "factor_kg_per_km": 0.004,
+      "source": "Our World in Data / DESNZ 2022",
+      "source_url": "https://ourworldindata.org/travel-carbon-footprint",
+      "notes": "Eurostar London–Paris example. Very low due to French nuclear + UK grid mix."
+    },
+
+    "tram_light_rail": {
+      "label": "Tram / light rail / Straßenbahn",
+      "factor_kg_per_km": 0.0157,
+      "electric": true,
+      "energy_kwh_per_km": 0.065,
+      "source": "DEFRA 2024 methodology (Table 26) + Ember 2023 EU avg grid (242 gCO2/kWh)",
+      "source_url": "https://assets.publishing.service.gov.uk/media/66a9fe4ca3c2a28abb50da4a/2024-greenhouse-gas-conversion-factors-methodology.pdf",
+      "notes": "DEFRA 2024 methodology Table 26 covers tram/light rail GHG factors. Factor = 242 * 0.065 / 1000. Scales with local grid."
+    },
+
+    "metro_subway": {
+      "label": "Metro / U-Bahn / subway",
+      "factor_kg_per_km": 0.0157,
+      "electric": true,
+      "energy_kwh_per_km": 0.065,
+      "source": "Derived: DEFRA 2024 methodology + Ember 2023 EU avg grid (242 gCO2/kWh)",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "Same energy profile as tram. Factor = 242 * 0.065 / 1000 = 0.0157. Example range: Vienna (130) → 0.0085 kg/km; Warsaw (662) → 0.043 kg/km."
+    },
+
+    "ebike": {
+      "label": "Electric bicycle / e-bike",
+      "factor_kg_per_km": 0.0012,
+      "electric": true,
+      "energy_kwh_per_km": 0.005,
+      "source": "Derived: DEFRA 2024 methodology + Ember 2023 EU avg grid (242 gCO2/kWh)",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "~0.005 kWh/km. Factor = 242 * 0.005 / 1000 = 0.0012. Near-negligible even on coal-heavy grids."
+    },
+
+    "ferry_foot_passenger": {
+      "label": "Ferry (foot passenger)",
+      "factor_kg_per_km": 0.0187,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "RoPax ferry foot passenger. Vessel emissions shared across all passengers and freight."
+    },
+
+    "ferry_car_driver": {
+      "label": "Ferry (car driver)",
+      "factor_kg_per_km": 0.1293,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "Driver bringing a car onto a ferry. Each additional passenger adds 0.0187 kg/km."
+    },
+
+    "carpool_4pax": {
+      "label": "Carpool (average petrol car, 4 passengers)",
+      "factor_kg_per_km": 0.0411,
+      "source": "Derived from DEFRA 2024 car_petrol_average / 4",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "derivation": "0.1645 / 4 = 0.041125"
+    },
+
+    "bicycle": {
+      "label": "Bicycle (human-powered)",
+      "factor_kg_per_km": 0.000,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "Zero operational emissions. Lifecycle manufacturing ~5 gCO2/km excluded per standard practice."
+    },
+
+    "walking": {
+      "label": "Walking",
+      "factor_kg_per_km": 0.000,
+      "source": "DEFRA 2024",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024"
+    }
+
+  },
+
+  "electric_mode_formula": {
+    "description": "For electric modes, compute country-specific factor as:",
+    "formula": "factor_kg_per_km = grid_gCO2e_per_kWh * energy_kWh_per_km / 1000",
+    "energy_kwh_per_km": {
+      "metro_subway": 0.065,
+      "tram_light_rail": 0.065,
+      "train_national_rail_uk": 0.035,
+      "ebike": 0.005
+    },
+    "source": "IPCC / IEA transport energy use data, cross-referenced with DEFRA 2024 methodology paper"
+  },
+
+  "grid_intensity_by_country_gCO2_per_kWh": {
+    "_source": "Ember European Electricity Review 2024",
+    "_source_url": "https://ember-energy.org/latest-insights/european-electricity-review-2024/",
+    "_data_year": 2023,
+    "AT": { "name": "Austria",        "grid": 130, "notes": "~70% hydro + wind" },
+    "DE": { "name": "Germany",        "grid": 371, "notes": "26% coal" },
+    "PL": { "name": "Poland",         "grid": 662, "notes": "61% coal — highest in EU" },
+    "CZ": { "name": "Czechia",        "grid": 450, "notes": "40% coal" },
+    "FR": { "name": "France",         "grid": 58,  "notes": "nuclear-dominant" },
+    "SE": { "name": "Sweden",         "grid": 41,  "notes": "hydro + nuclear — cleanest in EU" },
+    "NO": { "name": "Norway",         "grid": 26,  "notes": "~99% hydro" },
+    "CH": { "name": "Switzerland",    "grid": 39,  "notes": "hydro + nuclear" },
+    "NL": { "name": "Netherlands",    "grid": 283 },
+    "BE": { "name": "Belgium",        "grid": 145, "notes": "nuclear-dominant" },
+    "IT": { "name": "Italy",          "grid": 299 },
+    "ES": { "name": "Spain",          "grid": 163 },
+    "PT": { "name": "Portugal",       "grid": 113 },
+    "HU": { "name": "Hungary",        "grid": 210 },
+    "SK": { "name": "Slovakia",       "grid": 112 },
+    "DK": { "name": "Denmark",        "grid": 156 },
+    "FI": { "name": "Finland",        "grid": 87  },
+    "GB": { "name": "United Kingdom", "grid": 238 },
+    "US": { "name": "USA",            "grid": 386 },
+    "JP": { "name": "Japan",          "grid": 472 },
+    "CN": { "name": "China",          "grid": 581 },
+    "IN": { "name": "India",          "grid": 713 },
+    "AU": { "name": "Australia",      "grid": 500 },
+    "BR": { "name": "Brazil",         "grid": 100, "notes": "hydro-dominant" },
+    "CA": { "name": "Canada",         "grid": 130, "notes": "hydro-dominant" },
+    "EU": { "name": "EU average",     "grid": 242, "notes": "EEA 2023 EU-wide average" }
+  }
+}
