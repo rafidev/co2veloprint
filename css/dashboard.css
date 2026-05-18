@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=Lato:wght@300;400;700&display=swap');
+
 html, body, div, nav, aside, main, header, footer, 
 h1, p, label, input, button, a, span {
   box-sizing: border-box;
@@ -6,23 +8,23 @@ h1, p, label, input, button, a, span {
 }
 
 :root {
-  --background-main: #f5f2eb;
-  --background-alt: #edeae2;
-  --background-nav: #7a9e82;
-  --primary-green: #5a8a63;
-  --dark-green: #3d6b46;
-  --light-green: #8fb897;
-  --text-main: #1a1a18;
+  --background-main: rgb(255, 253, 245);
+  --background-alt: #f0f0e8;
+  --background-nav: rgb(134, 173, 134);
+  --primary-green: rgb(134, 173, 134);
+  --dark-green: #6e8f6e;
+  --light-green: #a8c8a8;
+  --text-main: #1a1a1a;
   --text-muted: #555550;
   --text-light: #888880;
   --border-color: #d4d0c6;
   --background-card: #ffffff;
-  --radius-small: 6px;
-  --radius-medium: 12px;
-  --radius-large: 20px;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-serif: 'Source Serif 4', Georgia, serif;
-  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --radius-small: 12px;
+  --radius-medium: 16px;
+  --radius-large: 24px;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Lato', sans-serif;
 }
 
 html { 
@@ -32,7 +34,7 @@ html {
 body {
   background: var(--background-main);
   color: var(--text-main);
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -51,12 +53,11 @@ body {
 }
 
 .nav-logo {
-  font-family: var(--font-sans);
-  font-size: 18px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   font-weight: 400;
-  color: #fff;
+  color: var(--text-main);
   text-decoration: none;
-  letter-spacing: -0.01em;
 }
 
 .nav-logo strong {
@@ -72,7 +73,8 @@ body {
 .nav-link {
   font-family: var(--font-sans);
   font-size: 14px;
-  color: rgba(255,255,255,0.92);
+  font-weight: 700;
+  color: var(--text-main);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -83,17 +85,18 @@ body {
 
 .footer-bar {
   background: var(--background-nav);
-  color: rgba(255,255,255,0.85);
+  color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.1rem 2.5rem;
+  padding: 1.5rem 2.5rem;
+  border-top: 1px solid #eee;
 }
 
 .footer-link {
-  color: rgba(255,255,255,0.85);
+  color: var(--text-main);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -182,7 +185,7 @@ body {
 
 .field-input:focus {
   border-color: var(--primary-green);
-  box-shadow: 0 0 0 3px rgba(90, 138, 99, 0.15);
+  box-shadow: 0 0 0 3px rgba(134, 173, 134, 0.2);
 }
 
 .field-input::placeholder {
@@ -208,7 +211,7 @@ body {
 .button {
   font-family: var(--font-sans);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-small);
   border: none;
@@ -228,6 +231,7 @@ body {
 
 .button-green:hover {
   background-color: var(--dark-green);
+  transform: translateY(-2px);
 }
 
 .button-full-width {
@@ -309,7 +313,7 @@ body {
   text-align: center;
   pointer-events: none;
   z-index: 5;
-  background: rgba(245,242,235,0.88);
+  background: rgba(255, 253, 245, 0.92);
   padding: 1.5rem 2rem;
   border-radius: var(--radius-large);
   border: 1px solid var(--border-color);
@@ -331,21 +335,19 @@ body {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
   }
-
   .sidebar-panel {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
     max-height: 45vh;
   }
-
   .dashboard-container { 
     overflow: auto; 
     height: auto; 
   }
-  
   .main-view-panel { 
     min-height: 55vh; 
   }
+
 }
 
 .route-co2 {
@@ -360,27 +362,6 @@ body {
   margin-top: 2px;
 }
 
-/* autocomplition */
-.field-wrapper {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%; 
-  left: 0;
-  right: 0;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  border-top: none;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000; 
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  display: none; 
-  border-radius: 0 0 4px 4px;
-}
-
 .dropdown-item {
   padding: 10px 12px;
   cursor: pointer;
@@ -392,5 +373,5 @@ body {
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+  background-color: #e8eee8;
 }
