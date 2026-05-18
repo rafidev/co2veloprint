@@ -21,17 +21,18 @@ async function loadEmissionFactors() {
 }
 
 const MODE_MAP = {
-  BUS:       "bus_local_average",
-  COACH:     "coach_average",
-  RAIL:      "train_national_rail_uk",
-  SUBWAY:    "metro_subway",
-  TRAM:      "tram_light_rail",
-  FERRY:     "ferry_foot_passenger",
-  BICYCLE:   "bicycle",
-  WALK:      "walking",
-  GONDOLA:   "tram_light_rail",
-  FUNICULAR: "tram_light_rail",
-  MONORAIL:  "metro_subway",
+  BUS:           "bus_local_average",
+  COACH:         "coach_average",
+  RAIL:          "train_regional_electric",  
+  REGIONAL_RAIL: "train_regional_electric",
+  SUBWAY:        "metro_subway",
+  TRAM:          "tram_light_rail",
+  FERRY:         "ferry_foot_passenger",
+  BICYCLE:       "bicycle",
+  WALK:          "walking",
+  GONDOLA:       "tram_light_rail",
+  FUNICULAR:     "tram_light_rail",
+  MONORAIL:      "metro_subway",
 };
 
 function polylineLengthKm(encoded) {
@@ -56,12 +57,13 @@ async function calcCO2kg(itinerary, countryCode = "AT") {
     let legKm;
     if (leg.distance != null) {
       legKm = leg.distance / 1000;
+    } else if (leg.from && leg.to) {
+      legKm = haversineKm([leg.from.lat, leg.from.lon], [leg.to.lat, leg.to.lon]);
     } else if (leg.legGeometry?.points) {
       legKm = polylineLengthKm(leg.legGeometry.points);
     } else {
       legKm = 0;
     }
-    if (legKm <= 0) continue;
 
     const key   = MODE_MAP[leg.mode] ?? "bus_local_average";
     const entry = modes[key];
@@ -74,6 +76,7 @@ async function calcCO2kg(itinerary, countryCode = "AT") {
       kgPerKm = entry.factor_kg_per_km;
     }
 
+    console.log(`leg: ${leg.mode} | raw distance: ${leg.distance} | legKm: ${legKm.toFixed(3)} | kgPerKm: ${kgPerKm} | contribution: ${(kgPerKm * legKm).toFixed(4)} kg`);
     totalKgCO2 += kgPerKm * legKm;
   }
 
@@ -222,7 +225,7 @@ function renderRouteList() {
         <span class="route-distance">${km}</span>
         ${modes ? `<span class="route-modes">${modes}</span>` : ""}
       </div>
-      <div class="route-co2">🌿 ${co2}</div>`;
+      <div class="route-co2">${co2}</div>`;
     list.appendChild(item);
   });
 
@@ -326,7 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("routes-section").style.display   = "none";
   document.getElementById("results-overlay").style.display  = "none";
 
-  // Pre-fetch factors so the first route doesn't wait on the JSON load
   loadEmissionFactors().catch(() => {});
 
   document.getElementById("add-route-btn").addEventListener("click", async () => {

@@ -14,7 +14,10 @@
       "DEFRA values are UK-specific. They are widely used internationally as a reference baseline.",
       "Electric modes (train, metro, tram, e-bike) scale with national grid CO2 intensity.",
       "For electric modes: factor = grid_gCO2e_per_kWh * energy_kWh_per_km / 1000",
-      "The factor_kg_per_km for electric modes uses the EU average grid (242 gCO2/kWh, EEA 2023)."
+      "The factor_kg_per_km for electric modes uses the EU average grid (242 gCO2/kWh, EEA 2023).",
+      "IMPORTANT: Always apply electric_mode_formula with the local country grid — never use UK DEFRA rail factors directly for non-UK electric rail.",
+      "Example: Vienna U-Bahn or ÖBB REX with AT grid (130 gCO2/kWh): 130 * 0.065 / 1000 = 0.00845 kg/km.",
+      "ÖBB (Austrian Federal Railways) runs on ~100% renewable electricity (hydro). The AT grid value of 130 gCO2/kWh is already conservative for ÖBB traction."
     ]
   },
 
@@ -42,7 +45,7 @@
       "factor_kg_per_km": 0.0436,
       "source": "DEFRA 2024",
       "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
-      "notes": "UK grid intensity ~238 gCO2/kWh. Adjust for other countries using grid_intensity_by_country."
+      "notes": "UK grid intensity ~238 gCO2/kWh. Adjust for other countries using electric_mode_formula with energy_kwh_per_km ~0.2 for an average EV."
     },
 
     "bus_local_average": {
@@ -72,9 +75,31 @@
     "train_national_rail_uk": {
       "label": "Train — National Rail (UK)",
       "factor_kg_per_km": 0.03546,
+      "electric": true,
+      "energy_kwh_per_km": 0.035,
       "source": "DEFRA 2024",
       "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
-      "notes": "UK-specific. Reflects UK grid mix (~238 gCO2/kWh). For other countries use the electric_mode_formula."
+      "notes": "UK-specific. Reflects UK grid mix (~238 gCO2/kWh) and UK national rail average energy use. DO NOT use this factor for non-UK rail — use electric_mode_formula with the correct country grid and the appropriate energy_kwh_per_km instead."
+    },
+
+    "train_regional_electric": {
+      "label": "Regional rail — electric (e.g. REX, S-Bahn, RER)",
+      "factor_kg_per_km": 0.01573,
+      "electric": true,
+      "energy_kwh_per_km": 0.065,
+      "source": "Derived: DEFRA 2024 methodology + Ember 2023 EU avg grid (242 gCO2/kWh)",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "Regional electric trains have similar per-passenger energy use to metro/tram (~0.065 kWh/km at average load). Factor = 242 * 0.065 / 1000 = 0.01573 using EU avg grid. Country-specific examples: AT (130 gCO2/kWh) → 0.00845 kg/km; DE (371) → 0.02412 kg/km; FR (58) → 0.00377 kg/km. Always prefer local grid via electric_mode_formula."
+    },
+
+    "train_intercity_electric": {
+      "label": "Intercity rail — electric (e.g. IC, Railjet, ICE)",
+      "factor_kg_per_km": 0.00847,
+      "electric": true,
+      "energy_kwh_per_km": 0.035,
+      "source": "Derived: DEFRA 2024 methodology + Ember 2023 EU avg grid (242 gCO2/kWh)",
+      "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+      "notes": "Long-distance intercity trains are more efficient per passenger-km due to higher load factors and aerodynamic rolling stock. energy_kwh_per_km ~0.035 (same basis as UK national rail). Factor = 242 * 0.035 / 1000 = 0.00847 using EU avg. AT example: 130 * 0.035 / 1000 = 0.00455 kg/km."
     },
 
     "train_international": {
@@ -87,32 +112,32 @@
 
     "tram_light_rail": {
       "label": "Tram / light rail / Straßenbahn",
-      "factor_kg_per_km": 0.0157,
+      "factor_kg_per_km": 0.01573,
       "electric": true,
       "energy_kwh_per_km": 0.065,
       "source": "DEFRA 2024 methodology (Table 26) + Ember 2023 EU avg grid (242 gCO2/kWh)",
       "source_url": "https://assets.publishing.service.gov.uk/media/66a9fe4ca3c2a28abb50da4a/2024-greenhouse-gas-conversion-factors-methodology.pdf",
-      "notes": "DEFRA 2024 methodology Table 26 covers tram/light rail GHG factors. Factor = 242 * 0.065 / 1000. Scales with local grid."
+      "notes": "DEFRA 2024 methodology Table 26 covers tram/light rail GHG factors. Factor = 242 * 0.065 / 1000. Scales with local grid. AT example (130 gCO2/kWh): 0.00845 kg/km."
     },
 
     "metro_subway": {
       "label": "Metro / U-Bahn / subway",
-      "factor_kg_per_km": 0.0157,
+      "factor_kg_per_km": 0.01573,
       "electric": true,
       "energy_kwh_per_km": 0.065,
       "source": "Derived: DEFRA 2024 methodology + Ember 2023 EU avg grid (242 gCO2/kWh)",
       "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
-      "notes": "Same energy profile as tram. Factor = 242 * 0.065 / 1000 = 0.0157. Example range: Vienna (130) → 0.0085 kg/km; Warsaw (662) → 0.043 kg/km."
+      "notes": "Same energy profile as tram. Factor = 242 * 0.065 / 1000 = 0.01573. Country examples: Vienna U-Bahn (AT, 130 gCO2/kWh) → 0.00845 kg/km; Warsaw Metro (PL, 662) → 0.04303 kg/km."
     },
 
     "ebike": {
       "label": "Electric bicycle / e-bike",
-      "factor_kg_per_km": 0.0012,
+      "factor_kg_per_km": 0.00121,
       "electric": true,
       "energy_kwh_per_km": 0.005,
       "source": "Derived: DEFRA 2024 methodology + Ember 2023 EU avg grid (242 gCO2/kWh)",
       "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
-      "notes": "~0.005 kWh/km. Factor = 242 * 0.005 / 1000 = 0.0012. Near-negligible even on coal-heavy grids."
+      "notes": "~0.005 kWh/km. Factor = 242 * 0.005 / 1000 = 0.00121. Near-negligible even on coal-heavy grids."
     },
 
     "ferry_foot_passenger": {
@@ -133,7 +158,7 @@
 
     "carpool_4pax": {
       "label": "Carpool (average petrol car, 4 passengers)",
-      "factor_kg_per_km": 0.0411,
+      "factor_kg_per_km": 0.04113,
       "source": "Derived from DEFRA 2024 car_petrol_average / 4",
       "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
       "derivation": "0.1645 / 4 = 0.041125"
@@ -157,13 +182,21 @@
   },
 
   "electric_mode_formula": {
-    "description": "For electric modes, compute country-specific factor as:",
+    "description": "For electric modes, compute country-specific factor as: factor_kg_per_km = grid_gCO2e_per_kWh * energy_kWh_per_km / 1000. Always use this with the local country grid from grid_intensity_by_country — never apply UK DEFRA rail factors directly to non-UK electric rail.",
     "formula": "factor_kg_per_km = grid_gCO2e_per_kWh * energy_kWh_per_km / 1000",
     "energy_kwh_per_km": {
       "metro_subway": 0.065,
       "tram_light_rail": 0.065,
+      "train_regional_electric": 0.065,
+      "train_intercity_electric": 0.035,
       "train_national_rail_uk": 0.035,
       "ebike": 0.005
+    },
+    "worked_examples": {
+      "vienna_ubahn": "130 * 0.065 / 1000 = 0.00845 kg/km",
+      "vienna_rex": "130 * 0.065 / 1000 = 0.00845 kg/km",
+      "berlin_sbahn": "371 * 0.065 / 1000 = 0.02412 kg/km",
+      "paris_rer": "58 * 0.065 / 1000 = 0.00377 kg/km"
     },
     "source": "IPCC / IEA transport energy use data, cross-referenced with DEFRA 2024 methodology paper"
   },
@@ -172,7 +205,7 @@
     "_source": "Ember European Electricity Review 2024",
     "_source_url": "https://ember-energy.org/latest-insights/european-electricity-review-2024/",
     "_data_year": 2023,
-    "AT": { "name": "Austria",        "grid": 130, "notes": "~70% hydro + wind" },
+    "AT": { "name": "Austria",        "grid": 130, "notes": "~70% hydro + wind. ÖBB traction is ~100% renewable — 130 is conservative for ÖBB rail." },
     "DE": { "name": "Germany",        "grid": 371, "notes": "26% coal" },
     "PL": { "name": "Poland",         "grid": 662, "notes": "61% coal — highest in EU" },
     "CZ": { "name": "Czechia",        "grid": 450, "notes": "40% coal" },
