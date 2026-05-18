@@ -348,6 +348,18 @@ body {
   }
 }
 
+.route-co2 {
+  font-size: 0.75rem;
+  color: #2ecc71;
+  margin-top: 4px;
+}
+
+.result-card-co2 {
+  font-size: 0.75rem;
+  color: #2ecc71;
+  margin-top: 2px;
+}
+
 /* autocomplition */
 .field-wrapper {
   position: relative;

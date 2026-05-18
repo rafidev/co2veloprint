@@ -10,6 +10,83 @@ const state = {
   nextId: 0,
 };
 
+let _emissionFactors = null;
+
+async function loadEmissionFactors() {
+  if (_emissionFactors) return _emissionFactors;
+  const res = await fetch("./co2-emission-factors.json");
+  if (!res.ok) throw new Error("Could not load co2-emission-factors.json");
+  _emissionFactors = await res.json();
+  return _emissionFactors;
+}
+
+const MODE_MAP = {
+  BUS:       "bus_local_average",
+  COACH:     "coach_average",
+  RAIL:      "train_national_rail_uk",
+  SUBWAY:    "metro_subway",
+  TRAM:      "tram_light_rail",
+  FERRY:     "ferry_foot_passenger",
+  BICYCLE:   "bicycle",
+  WALK:      "walking",
+  GONDOLA:   "tram_light_rail",
+  FUNICULAR: "tram_light_rail",
+  MONORAIL:  "metro_subway",
+};
+
+function polylineLengthKm(encoded) {
+  const coords = decodePolyline(encoded);
+  let km = 0;
+  for (let i = 1; i < coords.length; i++) {
+    km += haversineKm(coords[i - 1], coords[i]);
+  }
+  return km;
+}
+
+async function calcCO2kg(itinerary, countryCode = "AT") {
+  const factors  = await loadEmissionFactors();
+  const modes    = factors.transport_modes;
+  const formula  = factors.electric_mode_formula;
+  const gridData = factors.grid_intensity_by_country_gCO2_per_kWh;
+  const gridGco2 = (gridData[countryCode] ?? gridData["EU"]).grid;
+
+  let totalKgCO2 = 0;
+
+  for (const leg of itinerary.legs) {
+    let legKm;
+    if (leg.distance != null) {
+      legKm = leg.distance / 1000;
+    } else if (leg.legGeometry?.points) {
+      legKm = polylineLengthKm(leg.legGeometry.points);
+    } else {
+      legKm = 0;
+    }
+    if (legKm <= 0) continue;
+
+    const key   = MODE_MAP[leg.mode] ?? "bus_local_average";
+    const entry = modes[key];
+    if (!entry) continue;
+
+    let kgPerKm;
+    if (entry.electric && formula.energy_kwh_per_km[key] != null) {
+      kgPerKm = gridGco2 * formula.energy_kwh_per_km[key] / 1000;
+    } else {
+      kgPerKm = entry.factor_kg_per_km;
+    }
+
+    totalKgCO2 += kgPerKm * legKm;
+  }
+
+  return totalKgCO2;
+}
+
+function formatCO2(kg) {
+  if (kg == null) return "—";
+  return kg < 1
+    ? (kg * 1000).toFixed(0) + " g CO₂e"
+    : kg.toFixed(2) + " kg CO₂e";
+}
+
 function haversineKm([lat1, lon1], [lat2, lon2]) {
   const R    = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -131,6 +208,7 @@ function renderRouteList() {
     const colour = ROUTE_COLOURS[route.id % ROUTE_COLOURS.length];
     const km     = route.distanceKm != null ? route.distanceKm.toFixed(1) + " km" : "—";
     const modes  = route.itinerary ? describeModes(route.itinerary) : "";
+    const co2    = formatCO2(route.co2Kg);
 
     const item = document.createElement("div");
     item.className = "route-item";
@@ -143,7 +221,8 @@ function renderRouteList() {
       <div class="route-meta">
         <span class="route-distance">${km}</span>
         ${modes ? `<span class="route-modes">${modes}</span>` : ""}
-      </div>`;
+      </div>
+      <div class="route-co2">🌿 ${co2}</div>`;
     list.appendChild(item);
   });
 
@@ -161,6 +240,7 @@ function renderOverlay() {
   state.routes.forEach(route => {
     const colour = ROUTE_COLOURS[route.id % ROUTE_COLOURS.length];
     const km     = route.distanceKm != null ? route.distanceKm.toFixed(1) : "—";
+    const co2    = formatCO2(route.co2Kg);
     const card   = document.createElement("div");
     card.className = "result-card";
     card.innerHTML = `
@@ -168,6 +248,7 @@ function renderOverlay() {
       <div class="result-card-info">
         <div class="result-card-route">${route.from} → ${route.to}</div>
         <div class="result-card-km">${km} km <span class="result-card-transit">(transit)</span></div>
+        <div class="result-card-co2">🌿 ${co2}</div>
       </div>`;
     inner.appendChild(card);
   });
@@ -177,21 +258,22 @@ async function addRoute(fromName, toName, fromCoord, toCoord) {
   const id     = state.nextId++;
   const colour = ROUTE_COLOURS[id % ROUTE_COLOURS.length];
 
-  state.routes.push({ id, from: fromName, to: toName, fromCoord, toCoord, distanceKm: null, itinerary: null, layers: [] });
+  state.routes.push({ id, from: fromName, to: toName, fromCoord, toCoord, distanceKm: null, co2Kg: null, itinerary: null, layers: [] });
   renderRouteList();
   setError("");
   setLoading(true);
 
   try {
-    const itinerary = await fetchTransitRoute(fromCoord, toCoord);
-
+    const itinerary  = await fetchTransitRoute(fromCoord, toCoord);
     const distanceKm = haversineKm(fromCoord, toCoord);
+    const co2Kg      = await calcCO2kg(itinerary);
 
     const entry = state.routes.find(r => r.id === id);
     if (!entry) return;
 
     entry.itinerary  = itinerary;
     entry.distanceKm = distanceKm;
+    entry.co2Kg      = co2Kg;
 
     if (window._leafletMap) {
       entry.layers = drawItinerary(itinerary, colour, window._leafletMap);
@@ -243,6 +325,9 @@ function setLoading(on) {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("routes-section").style.display   = "none";
   document.getElementById("results-overlay").style.display  = "none";
+
+  // Pre-fetch factors so the first route doesn't wait on the JSON load
+  loadEmissionFactors().catch(() => {});
 
   document.getElementById("add-route-btn").addEventListener("click", async () => {
     const fromName  = window._selectedFromName || (document.getElementById("from-input").value ?? "").trim();
