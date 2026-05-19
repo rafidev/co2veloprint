@@ -7,7 +7,7 @@
     --text-black: #1a1a1a;
 }
 
-.impressum-section {
+.imprint-section {
     padding: 8rem 10%;
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -17,13 +17,12 @@
     justify-content: center;
 }
 
-
-.impressum-container {
+.imprint-container {
     max-width: 800px;
     width: 100%;
 }
 
-.impressum-container h1 {
+.imprint-container h1 {
     font-family: 'Fraunces', serif;
     font-size: clamp(2.5rem, 6vw, 3.5rem);
     color: var(--text-black);
@@ -40,29 +39,29 @@
     margin-bottom: 4rem;
 }
 
-.impressum-content {
+.imprint-content {
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
 }
 
-.impressum-block {
+.imprint-block {
     border-bottom: 1px solid rgba(110, 143, 110, 0.2); 
     padding-bottom: 2rem;
 }
 
-.impressum-block:last-child {
+.imprint-block:last-child {
     border-bottom: none; 
 }
 
-.impressum-content h3 {
+.imprint-content h3 {
     font-family: 'Fraunces', serif;
     font-size: 1.25rem;
     color: var(--primary-dark);
     margin-bottom: 0.75rem;
 }
 
-.impressum-content p {
+.imprint-content p {
     font-family: 'Lato', sans-serif;
     font-size: 1.15rem;
     line-height: 1.6;
@@ -70,12 +69,23 @@
     margin: 0;
 }
 
+.imprint-content a {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
+}
+
+.imprint-content a:hover {
+    color: var(--text-black);
+}
+
 @media (max-width: 600px) {
-    .impressum-section {
+    .imprint-section {
         padding: 4rem 5%;
     }
     
-    .impressum-container h1 {
+    .imprint-container h1 {
         font-size: 2.5rem;
     }
 }
