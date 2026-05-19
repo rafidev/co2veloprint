@@ -23,7 +23,7 @@ async function loadEmissionFactors() {
 const MODE_MAP = {
   BUS:           "bus_local_average",
   COACH:         "coach_average",
-  RAIL:          "train_regional_electric",  
+  RAIL:          "train_regional_electric",
   REGIONAL_RAIL: "train_regional_electric",
   SUBWAY:        "metro_subway",
   TRAM:          "tram_light_rail",
@@ -36,7 +36,7 @@ const MODE_MAP = {
 };
 
 function polylineLengthKm(encoded) {
-  const coords = decodePolyline(encoded);
+  const coords = decodePolylineAuto(encoded);
   let km = 0;
   for (let i = 1; i < coords.length; i++) {
     km += haversineKm(coords[i - 1], coords[i]);
@@ -102,8 +102,9 @@ function haversineKm([lat1, lon1], [lat2, lon2]) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function decodePolyline(encoded) {
+function decodePolyline(encoded, precision = 5) {
   const coords = [];
+  const factor = Math.pow(10, precision);
   let index = 0, lat = 0, lng = 0;
   while (index < encoded.length) {
     let b, shift = 0, result = 0;
@@ -112,16 +113,29 @@ function decodePolyline(encoded) {
     shift = 0; result = 0;
     do { b = encoded.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
     lng += result & 1 ? ~(result >> 1) : result >> 1;
-    coords.push([lat / 1e5, lng / 1e5]);
+    coords.push([lat / factor, lng / factor]);
   }
   return coords;
 }
 
+function decodePolylineAuto(encoded) {
+  const p5 = decodePolyline(encoded, 5);
+  if (p5.length > 0) {
+    const [la, lo] = p5[0];
+    if (Math.abs(la) > 90 || Math.abs(lo) > 180 || (Math.abs(la) < 0.5 && Math.abs(lo) < 0.5)) {
+      console.log("Switching to precision-6 polyline decode");
+      return decodePolyline(encoded, 6);
+    }
+  }
+  return p5;
+}
+
 async function fetchTransitRoute(fromCoord, toCoord) {
   const params = new URLSearchParams({
-    fromPlace: `${fromCoord[0]},${fromCoord[1]},0`,
-    toPlace:   `${toCoord[0]},${toCoord[1]},0`,
-    numItineraries: 1,
+    fromPlace:         `${fromCoord[0]},${fromCoord[1]},0`,
+    toPlace:           `${toCoord[0]},${toCoord[1]},0`,
+    numItineraries:    1,
+    legGeometryDetail: 5,
   });
 
   const res = await fetch(`${TRANSITOUS_BASE}/api/v5/plan?${params}`);
@@ -151,10 +165,25 @@ function drawItinerary(itinerary, colour, leafletMap) {
   const layers = [];
 
   for (const leg of itinerary.legs) {
-    const pts = leg.legGeometry?.points;
-    if (!pts) continue;
-    const coords = decodePolyline(pts);
     const isWalk = leg.mode === "WALK";
+    let coords = null;
+
+    if (leg.legGeometry?.points) {
+      coords = decodePolylineAuto(leg.legGeometry.points);
+    }
+    else if (leg.from?.lat && leg.from?.lon && leg.to?.lat && leg.to?.lon) {
+      coords = [
+        [leg.from.lat, leg.from.lon],
+        [leg.to.lat,   leg.to.lon],
+      ];
+    }
+
+    if (!coords || coords.length < 2) continue;
+
+    const hasInvalidCoord = coords.some(([la, lo]) =>
+      Math.abs(la) < 0.01 && Math.abs(lo) < 0.01
+    );
+    if (hasInvalidCoord) continue;
 
     const line = L.polyline(coords, {
       color:     colour,
@@ -162,6 +191,8 @@ function drawItinerary(itinerary, colour, leafletMap) {
       opacity:   isWalk ? 0.5 : 0.9,
       dashArray: isWalk ? "6 8" : null,
     }).addTo(leafletMap);
+
+    if (!isWalk) line._isTransitLeg = true;
 
     layers.push(line);
   }
@@ -186,9 +217,10 @@ function drawItinerary(itinerary, colour, leafletMap) {
 
 function fitMapToRoutes() {
   if (!window._leafletMap) return;
-  const all = state.routes.flatMap(r => r.layers ?? []);
-  if (!all.length) return;
-  window._leafletMap.fitBounds(L.featureGroup(all).getBounds().pad(0.18));
+  const transit = state.routes.flatMap(r => r.layers ?? []).filter(l => l._isTransitLeg);
+  const layers  = transit.length ? transit : state.routes.flatMap(r => r.layers ?? []);
+  if (!layers.length) return;
+  window._leafletMap.fitBounds(L.featureGroup(layers).getBounds().pad(0.25));
 }
 
 function renderRouteList() {
@@ -234,7 +266,6 @@ function renderRouteList() {
   );
 
   renderOverlay();
-  fitMapToRoutes();
 }
 
 function renderOverlay() {
@@ -280,11 +311,21 @@ async function addRoute(fromName, toName, fromCoord, toCoord) {
 
     if (window._leafletMap) {
       entry.layers = drawItinerary(itinerary, colour, window._leafletMap);
-      setTimeout(() => {
-        window._leafletMap.invalidateSize();
-        fitMapToRoutes();
-        renderRouteList();
-      }, 50);
+
+      window._leafletMap.invalidateSize();
+      const transitLayers = state.routes
+        .flatMap(r => r.layers ?? [])
+        .filter(l => l._isTransitLeg);
+      const boundsLayers = transitLayers.length
+        ? transitLayers
+        : state.routes.flatMap(r => r.layers ?? []);
+      if (boundsLayers.length) {
+        window._leafletMap.fitBounds(
+          L.featureGroup(boundsLayers).getBounds().pad(0.25)
+        );
+      }
+
+      renderRouteList();
     } else {
       renderRouteList();
     }
@@ -305,6 +346,7 @@ function removeRoute(id) {
   if (window._leafletMap && route.layers) route.layers.forEach(l => window._leafletMap.removeLayer(l));
   state.routes.splice(idx, 1);
   renderRouteList();
+  fitMapToRoutes();
 }
 
 function clearAllRoutes() {
